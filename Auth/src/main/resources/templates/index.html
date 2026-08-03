@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acme Console — Secure access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12172B;
+    --ink-soft: #232A45;
+    --paper: #F7F5F0;
+    --paper-dim: #EDEAE2;
+    --gold: #C9A962;
+    --gold-dim: #A9895064;
+    --gray: #6C7280;
+    --line: #DEDAD0;
+    --success: #4C7A5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ---------- Brand / live panel ---------- */
+  .panel-brand {
+    flex: 1 1 48%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 56px;
+    position: relative;
+    overflow: hidden;
+    min-width: 320px;
+  }
+
+  .panel-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(115deg, transparent 0 78px, rgba(201,169,98,0.07) 78px 79px);
+    pointer-events: none;
+  }
+
+  .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1;
+  }
+
+  .brand-mark .glyph {
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--gold);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-mark .glyph svg { width: 16px; height: 16px; }
+
+  .brand-mark span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+  }
+
+  .brand-copy { z-index: 1; max-width: 440px; }
+
+  .brand-copy h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 38px;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+
+  .brand-copy p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #C4C7D6;
+  }
+
+  /* ---------- Live widgets ---------- */
+  .live-stack {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .live-stats {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .stat .num .pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 rgba(76,122,94,0.5);
+    animation: pulse 2s infinite;
+    align-self: center;
+    margin-left: 2px;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(76,122,94,0.5); }
+    70%  { box-shadow: 0 0 0 7px rgba(76,122,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(76,122,94,0); }
+  }
+
+  .stat .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9DA2B8;
+    margin-top: 4px;
+  }
+
+  .live-feed {
+    border-top: 1px solid rgba(255,255,255,0.09);
+    padding-top: 16px;
+    height: 46px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .feed-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #B7BBCC;
+    letter-spacing: 0.01em;
+    position: absolute;
+    inset: 16px 0 0 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .feed-item.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .feed-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .feed-item time {
+    margin-left: auto;
+    color: #7B8098;
+  }
+
+  .status-row {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #9DA2B8;
+    letter-spacing: 0.02em;
+  }
+
+  .status-row .sep { color: #4A4F68; }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(76,122,94,0.25);
+  }
+
+  /* ---------- Choice panel ---------- */
+  .panel-choice {
+    flex: 1 1 52%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .choice-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .choice-header { margin-bottom: 32px; }
+
+  .choice-header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .choice-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .choice-header p {
+    font-size: 14px;
+    color: var(--gray);
+  }
+
+  .action-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 20px 20px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    margin-bottom: 14px;
+  }
+
+  .action-card:hover {
+    border-color: var(--ink);
+    box-shadow: 0 6px 22px rgba(18,23,43,0.08);
+    transform: translateY(-1px);
+  }
+
+  .action-card:active { transform: translateY(0) scale(0.995); }
+
+  .action-card.primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .action-card .a-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: var(--paper-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .action-card.primary .a-icon {
+    background: rgba(201,169,98,0.18);
+  }
+
+  .action-card .a-icon svg { width: 22px; height: 22px; }
+
+  .action-card .a-body { flex: 1; }
+
+  .action-card .a-body strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .action-card .a-body span {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  .action-card.primary .a-body span { color: #C4C7D6; }
+
+  .action-card .a-arrow {
+    font-size: 18px;
+    color: var(--gray);
+    transition: transform 0.15s ease;
+  }
+
+  .action-card.primary .a-arrow { color: var(--gold); }
+
+  .action-card:hover .a-arrow { transform: translateX(4px); }
+
+  .trust-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--gray);
+  }
+
+  .trust-row svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 860px) {
+    body { flex-direction: column; }
+    .panel-brand { flex: 0 0 auto; padding: 32px 28px; }
+    .brand-copy h1 { font-size: 28px; }
+    .panel-choice { padding: 32px 20px; }
+    .live-stack { margin: 22px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="panel-brand">
+    <div class="brand-mark">
+      <div class="glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.6">
+          <rect x="4" y="10" width="16" height="10" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+      <span>Acme Console</span>
+    </div>
+
+    <div class="brand-copy">
+      <h1>One identity.<br>Every workspace.</h1>
+      <p>Secure single sign-on for your whole organization. Create an account or sign in to reach every tool your team relies on.</p>
+    </div>
+
+    <div class="live-stack">
+      <div class="live-stats">
+        <div class="stat">
+          <div class="num"><span id="stat-online">0</span><span class="pulse"></span></div>
+          <div class="label">Sessions live now</div>
+        </div>
+        <div class="stat">
+          <div class="num"><span id="stat-today">0</span></div>
+          <div class="label">Sign-ins today</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="stat-uptime">99.99<span style="font-size:15px">%</span></div>
+          <div class="label">30-day uptime</div>
+        </div>
+      </div>
+
+      <div class="live-feed" id="live-feed" aria-hidden="true">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span><span class="status-dot" style="display:inline-block"></span> ALL SYSTEMS OPERATIONAL</span>
+      <span class="sep">·</span>
+      <span class="clock" id="clock">--:--:--</span>
+    </div>
+  </div>
+
+  <div class="panel-choice">
+    <div class="choice-card">
+      <div class="choice-header">
+        <span class="eyebrow">Welcome</span>
+        <h2>Get started</h2>
+        <p>Choose how you'd like to continue.</p>
+      </div>
+
+      <!-- Sign in -->
+      <a class="action-card primary" href="sso-login.html">
+        <span class="a-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.7">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>
+          </svg>
+        </span>
+        <span class="a-body">
+          <strong>Sign in</strong>
+          <span>Access your account with a password or SSO.</span>
+        </span>
+        <span class="a-arrow">→</span>
+      </a>
+
+      <!-- Create account -->
+      <a class="action-card" href="signup.html">
+        <span class="a-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#12172B" stroke-width="1.7">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>
+          </svg>
+        </span>
+        <span class="a-body">
+          <strong>Create account</strong>
+          <span>New to Acme? Set up your organization identity.</span>
+        </span>
+        <span class="a-arrow">→</span>
+      </a>
+
+      <div class="trust-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+        <span>Protected by end-to-end encryption &amp; SOC 2 controls.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Live clock ----
+    const clockEl = document.getElementById('clock');
+    function tickClock() {
+      const now = new Date();
+      clockEl.textContent = now.toLocaleTimeString([], { hour12: false });
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    // ---- Animated count-up for stats ----
+    function countUp(el, target, duration = 1400) {
+      const start = performance.now();
+      const from = 0;
+      function frame(t) {
+        const p = Math.min((t - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        el.textContent = Math.round(from + (target - from) * eased).toLocaleString();
+        if (p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // Seed values (a real backend would supply these live)
+    let online = 210 + Math.floor(Math.random() * 60);
+    let today  = 4800 + Math.floor(Math.random() * 900);
+    const onlineEl = document.getElementById('stat-online');
+    const todayEl  = document.getElementById('stat-today');
+    countUp(onlineEl, online);
+    countUp(todayEl, today);
+
+    // Keep the "live now" number gently drifting so it feels real
+    setInterval(() => {
+      online += Math.floor(Math.random() * 7) - 3;
+      if (online < 180) online = 180;
+      onlineEl.textContent = online.toLocaleString();
+    }, 3200);
+
+    // Sign-ins today keeps ticking up
+    setInterval(() => {
+      today += Math.floor(Math.random() * 3);
+      todayEl.textContent = today.toLocaleString();
+    }, 4500);
+
+    // ---- Rolling live activity feed ----
+    const feedTemplates = [
+      ['New session', 'Marketing · Google Workspace'],
+      ['SSO login', 'Engineering · Okta'],
+      ['Account created', 'Finance team'],
+      ['New session', 'Design · Microsoft Entra ID'],
+      ['MFA verified', 'Security · SAML'],
+      ['SSO login', 'Sales · Google Workspace'],
+      ['Session refreshed', 'Support · Okta'],
+      ['New session', 'Operations · Entra ID'],
+    ];
+    const feedEl = document.getElementById('live-feed');
+    let feedIdx = 0;
+    let currentItem = null;
+
+    function relTime() {
+      const s = Math.floor(Math.random() * 40) + 1;
+      return s + 's ago';
+    }
+
+    function pushFeed() {
+      const [title, meta] = feedTemplates[feedIdx % feedTemplates.length];
+      feedIdx++;
+
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.innerHTML = `<span class="dot"></span><span><strong style="color:#E7E4DB;font-weight:500">${title}</strong> — ${meta}</span><time>${relTime()}</time>`;
+      feedEl.appendChild(item);
+
+      // fade out the previous one
+      const prev = currentItem;
+      requestAnimationFrame(() => item.classList.add('active'));
+      if (prev) {
+        prev.classList.remove('active');
+        setTimeout(() => prev.remove(), 600);
+      }
+      currentItem = item;
+    }
+    pushFeed();
+    setInterval(pushFeed, 3000);
+  </script>
+
+</body>
+</html>

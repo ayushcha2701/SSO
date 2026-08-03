@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Program Files\\\\Java\\\\jdk-21\"; cd Auth; .\\\\mvnw.cmd -q clean compile 2>&1 | Select-Object -Last 25; \"EXIT: $LASTEXITCODE\")",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Program Files\\\\Java\\\\jdk-21\"; Set-Location \"c:\\\\Users\\\\gauta\\\\Desktop\\\\Projects\\\\SSO\\\\Auth\"; .\\\\mvnw.cmd -q clean compile 2>&1 | Select-Object -Last 25; \"EXIT: $LASTEXITCODE\")",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Program Files\\\\Java\\\\jdk-21\"; Set-Location \"c:\\\\Users\\\\gauta\\\\Desktop\\\\Projects\\\\SSO\\\\Auth\"; Start-Process -FilePath \".\\\\mvnw.cmd\" -ArgumentList \"spring-boot:run\" -RedirectStandardOutput \"$env:TEMP\\\\sso-run.log\" -RedirectStandardError \"$env:TEMP\\\\sso-run-err.log\" -NoNewWindow -PassThru | Select-Object Id | Out-String)",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\gauta\\\\Desktop\\\\Projects\\\\SSO\\\\Auth\"; Start-Process -FilePath \".\\\\mvnw.cmd\" -ArgumentList \"spring-boot:run\" -RedirectStandardOutput \"$env:TEMP\\\\sso-day1.log\" -RedirectStandardError \"$env:TEMP\\\\sso-day1-err.log\" -NoNewWindow -PassThru | Select-Object -ExpandProperty Id)"
+    ]
+  }
+}

@@ -41,8 +41,8 @@ Milestone 1 — Foundation, in progress.
 
 - [x] Three UI pages built, with backend hook points marked
 - [x] Git repository initialized
-- [ ] Maven project builds and runs
-- [ ] `/actuator/health` responding
+- [x] Maven project builds and runs
+- [x] `/actuator/health` responding
 - [ ] Pages served at clean Spring routes
 - [ ] Spring Security with in-memory users
 
@@ -58,10 +58,11 @@ cd Auth
 ./mvnw spring-boot:run        # Windows: .\mvnw.cmd spring-boot:run
 ```
 
-> **Note:** the backend does not start yet. The generated `pom.xml` still needs work
-> before Phase 2 is complete — see the Status checklist above.
+The app serves on `http://localhost:8080`. Verify it is alive:
 
-The app will serve on `http://localhost:8080`.
+```
+curl http://localhost:8080/actuator/health     # {"status":"UP"}
+```
 
 ## Security ground rules
 
