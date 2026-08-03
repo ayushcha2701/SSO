@@ -1,0 +1,19 @@
+# Repo-wide ignores.
+# Build artifacts and IDE files are handled by Auth/.gitignore — gitignore
+# files cascade into subdirectories, so we do not duplicate them here.
+
+### Secrets — never commit these (security rule #7) ###
+.env
+*.env
+!.env.example
+
+### Logs ###
+*.log
+
+### Per-machine tool settings (not project source) ###
+.claude/settings.local.json
+
+### OS junk ###
+.DS_Store
+Thumbs.db
+desktop.ini

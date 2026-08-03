@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create your account — Acme Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12172B;
+    --ink-soft: #232A45;
+    --paper: #F7F5F0;
+    --paper-dim: #EDEAE2;
+    --gold: #C9A962;
+    --gray: #6C7280;
+    --line: #DEDAD0;
+    --success: #4C7A5E;
+    --danger: #B4472F;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .panel-brand {
+    flex: 1 1 42%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 56px;
+    position: relative;
+    overflow: hidden;
+    min-width: 320px;
+  }
+
+  .panel-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(115deg, transparent 0 78px, rgba(201,169,98,0.07) 78px 79px);
+    pointer-events: none;
+  }
+
+  .brand-mark { display: flex; align-items: center; gap: 12px; z-index: 1; }
+
+  .brand-mark .glyph {
+    width: 34px; height: 34px;
+    border: 1.5px solid var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .brand-mark .glyph svg { width: 16px; height: 16px; }
+
+  .brand-mark span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 17px; letter-spacing: 0.01em;
+  }
+
+  .brand-copy { z-index: 1; max-width: 380px; }
+
+  .brand-copy h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 34px; line-height: 1.25;
+    letter-spacing: -0.01em; margin-bottom: 16px;
+  }
+
+  .brand-copy p { font-size: 15px; line-height: 1.6; color: #C4C7D6; }
+
+  .perks { z-index: 1; display: flex; flex-direction: column; gap: 14px; }
+
+  .perk {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13.5px; color: #C4C7D6;
+  }
+
+  .perk .check {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: rgba(201,169,98,0.16);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .perk .check svg { width: 13px; height: 13px; }
+
+  .status-row {
+    z-index: 1; display: flex; align-items: center; gap: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    color: #9DA2B8; letter-spacing: 0.02em;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 0 3px rgba(76,122,94,0.25);
+  }
+
+  .panel-form {
+    flex: 1 1 58%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .card { width: 100%; max-width: 400px; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--gray); text-decoration: none;
+    margin-bottom: 22px; transition: color 0.15s ease;
+  }
+  .back-link:hover { color: var(--ink); }
+
+  .card-header { margin-bottom: 26px; }
+
+  .card-header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px; display: block;
+  }
+
+  .card-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 26px; margin-bottom: 8px;
+  }
+
+  .card-header p { font-size: 14px; color: var(--gray); }
+
+  form { display: flex; flex-direction: column; gap: 16px; }
+
+  .row-2 { display: flex; gap: 12px; }
+  .row-2 .field { flex: 1; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+
+  .field input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    background: #fff; color: var(--ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .field input:focus {
+    outline: none; border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(18,23,43,0.06);
+  }
+
+  .field input::placeholder { color: #A6ABB8; }
+
+  .field input.ok { border-color: var(--success); }
+  .field input.bad { border-color: var(--danger); }
+
+  .field .msg { font-size: 12px; min-height: 15px; color: var(--gray); }
+  .field .msg.ok { color: var(--success); }
+  .field .msg.bad { color: var(--danger); }
+
+  /* Live password strength meter */
+  .strength { display: flex; gap: 5px; margin-top: 2px; }
+  .strength .bar {
+    height: 4px; flex: 1; border-radius: 2px;
+    background: var(--line); transition: background 0.2s ease;
+  }
+
+  .submit-btn {
+    margin-top: 4px; width: 100%; padding: 13px 20px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14.5px;
+    cursor: pointer; transition: background 0.15s ease, opacity 0.15s ease;
+  }
+  .submit-btn:hover { background: var(--ink-soft); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .submit-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .footnote {
+    margin-top: 20px; font-size: 13px; color: var(--gray); text-align: center;
+  }
+  .footnote a {
+    color: var(--ink-soft); text-decoration: underline;
+    text-decoration-color: var(--line); text-underline-offset: 2px;
+  }
+
+  @media (max-width: 860px) {
+    body { flex-direction: column; }
+    .panel-brand { flex: 0 0 auto; padding: 32px 28px; min-height: 180px; }
+    .brand-copy h1 { font-size: 26px; }
+    .perks { display: none; }
+    .panel-form { padding: 32px 20px; }
+    .row-2 { flex-direction: column; gap: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="panel-brand">
+    <div class="brand-mark">
+      <div class="glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.6">
+          <rect x="4" y="10" width="16" height="10" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+      <span>Acme Console</span>
+    </div>
+
+    <div class="brand-copy">
+      <h1>Create your<br>organization identity.</h1>
+      <p>One account to manage access across every tool your team uses — provisioned in minutes.</p>
+    </div>
+
+    <div class="perks">
+      <div class="perk">
+        <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        Free 14-day trial, no card required
+      </div>
+      <div class="perk">
+        <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        SSO with Google, Microsoft, Okta &amp; SAML
+      </div>
+      <div class="perk">
+        <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        SOC 2 Type II &amp; end-to-end encryption
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span class="status-dot"></span>
+      <span>PROVISIONING · READY</span>
+    </div>
+  </div>
+
+  <div class="panel-form">
+    <div class="card">
+      <a class="back-link" href="index.html">← Back</a>
+
+      <div class="card-header">
+        <span class="eyebrow">Create account</span>
+        <h2>Get started free</h2>
+        <p>It only takes a minute to set up your workspace.</p>
+      </div>
+
+      <!-- BACKEND HOOK: wire form submit to your account-creation endpoint -->
+      <form id="signup-form" novalidate>
+        <div class="row-2">
+          <div class="field">
+            <label for="first">First name</label>
+            <input type="text" id="first" name="first" placeholder="Jordan" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="last">Last name</label>
+            <input type="text" id="last" name="last" placeholder="Rivera" autocomplete="family-name" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Work email</label>
+          <input type="email" id="email" name="email" placeholder="you@company.com" autocomplete="email" required>
+          <span class="msg" id="email-msg"></span>
+        </div>
+
+        <div class="field">
+          <label for="pw">Password</label>
+          <input type="password" id="pw" name="pw" placeholder="Create a strong password" autocomplete="new-password" required>
+          <div class="strength" aria-hidden="true">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+          <span class="msg" id="pw-msg">Use 8+ characters with a mix of letters, numbers &amp; symbols.</span>
+        </div>
+
+        <button class="submit-btn" type="submit" id="submit-btn" disabled>Create account</button>
+      </form>
+
+      <p class="footnote">
+        Already have an account? <a href="sso-login.html">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('signup-form');
+    const email = document.getElementById('email');
+    const emailMsg = document.getElementById('email-msg');
+    const pw = document.getElementById('pw');
+    const pwMsg = document.getElementById('pw-msg');
+    const bars = document.querySelectorAll('.strength .bar');
+    const submitBtn = document.getElementById('submit-btn');
+    const first = document.getElementById('first');
+    const last = document.getElementById('last');
+
+    // ---- Live email validation ----
+    function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    email.addEventListener('input', () => {
+      const v = email.value.trim();
+      if (!v) { email.classList.remove('ok','bad'); emailMsg.textContent = ''; emailMsg.className = 'msg'; }
+      else if (validEmail(v)) { email.classList.add('ok'); email.classList.remove('bad'); emailMsg.textContent = 'Looks good.'; emailMsg.className = 'msg ok'; }
+      else { email.classList.add('bad'); email.classList.remove('ok'); emailMsg.textContent = 'Enter a valid email address.'; emailMsg.className = 'msg bad'; }
+      refresh();
+    });
+
+    // ---- Live password strength meter ----
+    const strengthColors = ['#B4472F', '#C77F2E', '#C9A962', '#4C7A5E'];
+    const strengthWords  = ['Weak', 'Fair', 'Good', 'Strong'];
+
+    function scorePw(v) {
+      let s = 0;
+      if (v.length >= 8) s++;
+      if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+      if (/\d/.test(v)) s++;
+      if (/[^A-Za-z0-9]/.test(v)) s++;
+      return Math.min(s, 4);
+    }
+
+    pw.addEventListener('input', () => {
+      const v = pw.value;
+      const s = v ? scorePw(v) : 0;
+      bars.forEach((bar, i) => {
+        bar.style.background = i < s ? strengthColors[s - 1] : 'var(--line)';
+      });
+      if (!v) { pwMsg.textContent = 'Use 8+ characters with a mix of letters, numbers & symbols.'; pwMsg.className = 'msg'; }
+      else { pwMsg.textContent = strengthWords[s - 1] + ' password'; pwMsg.className = 'msg' + (s >= 3 ? ' ok' : (s <= 1 ? ' bad' : '')); }
+      refresh();
+    });
+
+    // ---- Enable submit only when the form is valid ----
+    function formValid() {
+      return first.value.trim() && last.value.trim() && validEmail(email.value.trim()) && scorePw(pw.value) >= 2;
+    }
+    function refresh() { submitBtn.disabled = !formValid(); }
+    [first, last].forEach(el => el.addEventListener('input', refresh));
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!formValid()) return;
+      submitBtn.textContent = 'Creating account…';
+      submitBtn.disabled = true;
+      // BACKEND HOOK: replace this timeout with your real API call
+      setTimeout(() => { window.location.href = 'sso-login.html'; }, 1200);
+    });
+  </script>
+
+</body>
+</html>
