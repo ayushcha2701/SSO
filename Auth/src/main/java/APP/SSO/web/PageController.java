@@ -2,6 +2,7 @@ package APP.SSO.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -17,5 +18,15 @@ public class PageController {
     @GetMapping("/signUp")
     public String landing() {
         return "index";
+    }
+
+    @GetMapping("/signIn")
+    public String signIn(){
+        return "sso-login";
+    }
+
+    @GetMapping("/createAccount")
+    public String createAccount(){
+        return "createAcct";
     }
 }
