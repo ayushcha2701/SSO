@@ -2,6 +2,7 @@ package APP.SSO.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Serves the HTML pages.
@@ -10,9 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
  * extension. Thymeleaf turns "index" into src/main/resources/templates/index.html.
  */
 @Controller
+@RequestMapping("/acmeConsole")
 public class PageController {
 
-    @GetMapping("/")
+    @GetMapping("/signUp")
     public String landing() {
         return "index";
     }
