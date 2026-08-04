@@ -1,5 +1,6 @@
 package APP.SSO.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +52,6 @@ public class PageController {
     public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest req)
             throws UserAlreadyExistsException {
         SignInResponse res = userServiceInterface.signIn(req);
-        return new ResponseEntity<>(res,);
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 }
