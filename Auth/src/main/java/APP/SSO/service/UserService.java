@@ -1,5 +1,7 @@
 package APP.SSO.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +9,8 @@ import APP.SSO.dto.SignInRequest;
 import APP.SSO.dto.SignInResponse;
 import APP.SSO.entity.User;
 import APP.SSO.exception.UserAlreadyExistsException;
+import APP.SSO.exception.UserDoesNotExistsException;
+import APP.SSO.exception.WrongPasswordException;
 import APP.SSO.repository.UserRepository;
 
 @Service
@@ -14,6 +18,7 @@ public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+
 
     private UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
 
@@ -48,6 +53,24 @@ public class UserService implements UserServiceInterface {
                 saved.getLastName(),
                 saved.getWorkEmailId());
 
+    }
+
+    @Override
+    public String login(String email, String password) throws UserDoesNotExistsException, WrongPasswordException {
+        
+        Optional<User> user = userRepository.findByWorkEmailId(email);
+        
+        if(!user.isPresent()){
+            throw new UserDoesNotExistsException("User with "+email+" doen't not exists");
+        }
+
+        boolean matches = encoder.matches(password, user.get().getPassword());
+
+        if(matches){
+            return "Success";
+        }
+
+        throw new WrongPasswordException("Wrong Password");
     }
 
     
