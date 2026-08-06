@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import APP.SSO.dto.LogInRequestDto;
+import APP.SSO.dto.LogInResponseDto;
+import APP.SSO.dto.RequestStatus;
 import APP.SSO.dto.SignInRequest;
 import APP.SSO.dto.SignInResponse;
 import APP.SSO.exception.UserAlreadyExistsException;
@@ -54,5 +57,22 @@ public class PageController {
         SignInResponse res = userServiceInterface.signIn(req);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<LogInResponseDto> login(@RequestBody LogInRequestDto req) {
+
+        try{
+            userServiceInterface.login(req.getEmail(),req.getPassword());
+            LogInResponseDto res = new LogInResponseDto();
+            res.setRequestStatus(RequestStatus.SUCCESS);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        }catch(Exception e){
+            LogInResponseDto res = new LogInResponseDto();
+            res.setRequestStatus(RequestStatus.FAILURE);
+            return new ResponseEntity<>(res, HttpStatus.UNAUTHORIZED);
+        }  
+        
+    }
+    
 
 }

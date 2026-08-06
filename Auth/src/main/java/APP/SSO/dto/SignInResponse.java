@@ -1,12 +1,9 @@
 package APP.SSO.dto;
 
 import java.util.UUID;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 @Setter
 @Getter
 public class SignInResponse {
