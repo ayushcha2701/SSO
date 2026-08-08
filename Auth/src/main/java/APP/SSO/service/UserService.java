@@ -1,78 +1,60 @@
 package APP.SSO.service;
 
-import java.util.Optional;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import APP.SSO.dto.SignInRequest;
-import APP.SSO.dto.SignInResponse;
+import APP.SSO.dto.LoginRequest;
+import APP.SSO.dto.SignupRequest;
+import APP.SSO.dto.SignupResponse;
 import APP.SSO.entity.User;
+import APP.SSO.exception.InvalidCredentialsException;
 import APP.SSO.exception.UserAlreadyExistsException;
-import APP.SSO.exception.UserDoesNotExistsException;
-import APP.SSO.exception.WrongPasswordException;
 import APP.SSO.repository.UserRepository;
 
 @Service
 public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-
-    private UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-
-        this.encoder = bCryptPasswordEncoder;
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-
     }
 
     @Override
-    public SignInResponse signIn(SignInRequest req) throws UserAlreadyExistsException {
+    public SignupResponse signUp(SignupRequest req) throws UserAlreadyExistsException {
 
         String emailId = req.getWorkEmailId();
 
         if (userRepository.findByWorkEmailId(emailId).isPresent()) {
-
-            throw new UserAlreadyExistsException("User with this email id" + emailId + "already exist");
-
+            throw new UserAlreadyExistsException("User with email " + emailId + " already exists");
         }
 
         User user = new User();
-
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
         user.setWorkEmailId(emailId);
-        user.setPassword(encoder.encode(req.getPassword()));
+        user.setPasswordHash(encoder.encode(req.getPassword()));
 
         User saved = userRepository.save(user);
 
-        return new SignInResponse(
+        return new SignupResponse(
                 saved.getId(),
                 saved.getFirstName(),
                 saved.getLastName(),
                 saved.getWorkEmailId());
-
     }
 
     @Override
-    public String login(String email, String password) throws UserDoesNotExistsException, WrongPasswordException {
-        
-        Optional<User> user = userRepository.findByWorkEmailId(email);
-        
-        if(!user.isPresent()){
-            throw new UserDoesNotExistsException("User with "+email+" doen't not exists");
+    public void login(LoginRequest req) throws InvalidCredentialsException {
+
+        // Same exception for "no such user" and "wrong password" — never reveal
+        // which one it was (security rule #4).
+        User user = userRepository.findByWorkEmailId(req.getWorkEmailId())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!encoder.matches(req.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
         }
-
-        boolean matches = encoder.matches(password, user.get().getPassword());
-
-        if(matches){
-            return "Success";
-        }
-
-        throw new WrongPasswordException("Wrong Password");
     }
-
-    
-
 }

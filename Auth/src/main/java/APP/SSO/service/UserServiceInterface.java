@@ -1,13 +1,14 @@
 package APP.SSO.service;
 
-import APP.SSO.dto.SignInRequest;
-import APP.SSO.dto.SignInResponse;
+import APP.SSO.dto.LoginRequest;
+import APP.SSO.dto.SignupRequest;
+import APP.SSO.dto.SignupResponse;
 import APP.SSO.exception.UserAlreadyExistsException;
-import APP.SSO.exception.UserDoesNotExistsException;
-import APP.SSO.exception.WrongPasswordException;
+import APP.SSO.exception.InvalidCredentialsException;
 
 public interface UserServiceInterface {
-    
-      public SignInResponse signIn(SignInRequest req) throws UserAlreadyExistsException;
-      public String login(String email, String password ) throws UserDoesNotExistsException, WrongPasswordException;
+
+    SignupResponse signUp(SignupRequest req) throws UserAlreadyExistsException;
+
+    void login(LoginRequest req) throws InvalidCredentialsException;
 }

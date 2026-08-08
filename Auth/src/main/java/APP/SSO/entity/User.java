@@ -2,7 +2,6 @@ package APP.SSO.entity;
 
 import java.util.UUID;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +12,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Setter 
+@Setter
 @Getter
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -27,5 +27,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String workEmailId;
 
-    private String password;
+    /** BCrypt hash — never the raw password. */
+    @Column(nullable = false)
+    private String passwordHash;
 }
