@@ -1,7 +1,15 @@
 package APP.SSO.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +23,8 @@ import APP.SSO.dto.SignupResponse;
 import APP.SSO.exception.InvalidCredentialsException;
 import APP.SSO.exception.UserAlreadyExistsException;
 import APP.SSO.service.UserServiceInterface;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 /**
@@ -32,9 +42,11 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final UserServiceInterface userService;
+    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
     public AuthController(UserServiceInterface userService) {
         this.userService = userService;
+        
     }
 
     @PostMapping("/signup")
@@ -45,10 +57,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest req)
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response)
             throws InvalidCredentialsException {
 
         userService.login(req);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken( req.getWorkEmailId(), null, List.of());
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, request, response);
         return ResponseEntity.ok(new LoginResponse(RequestStatus.SUCCESS));
     }
 }

@@ -15,10 +15,12 @@ import APP.SSO.repository.UserRepository;
 public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository) {
+    private final BCryptPasswordEncoder encoder; 
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -48,8 +50,6 @@ public class UserService implements UserServiceInterface {
     @Override
     public void login(LoginRequest req) throws InvalidCredentialsException {
 
-        // Same exception for "no such user" and "wrong password" — never reveal
-        // which one it was (security rule #4).
         User user = userRepository.findByWorkEmailId(req.getWorkEmailId())
                 .orElseThrow(InvalidCredentialsException::new);
 

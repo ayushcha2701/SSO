@@ -60,22 +60,26 @@
   }
 
   .brand-mark .glyph {
-    width: 34px;
-    height: 34px;
-    border: 1.5px solid var(--gold);
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .brand-mark .glyph svg { width: 16px; height: 16px; }
+  .brand-mark .glyph svg { width: 34px; height: 34px; }
 
   .brand-mark span {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 17px;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
+  }
+
+  .brand-mark span .thin {
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: 0.04em;
   }
 
   .brand-copy { z-index: 1; max-width: 440px; }
@@ -355,12 +359,19 @@
   <div class="panel-brand">
     <div class="brand-mark">
       <div class="glyph">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.6">
-          <rect x="4" y="10" width="16" height="10" rx="2"/>
-          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        <svg viewBox="0 0 32 32" fill="none" stroke="#C9A962" stroke-linejoin="round">
+          <!-- shield -->
+          <path d="M16 2.5 L28 7.2 V16.5 C28 23.4 22.9 28.4 16 30.5 C9.1 28.4 4 23.4 4 16.5 V7.2 Z"
+                stroke-width="1.4"/>
+          <!-- inner hairline -->
+          <path d="M16 6 L25 9.5 V16.4 C25 21.7 21 25.7 16 27.6 C11 25.7 7 21.7 7 16.4 V9.5 Z"
+                stroke-width="0.6" opacity="0.45"/>
+          <!-- A monogram -->
+          <path d="M11.2 22 L16 10.8 L20.8 22" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M13.2 18.2 H18.8" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </div>
-      <span>Acme Console</span>
+      <span>Acme <span class="thin">Console</span></span>
     </div>
 
     <div class="brand-copy">
@@ -405,7 +416,7 @@
       </div>
 
       <!-- Sign in -->
-      <a class="action-card primary" href="signIn">
+      <a class="action-card primary" href="/acmeConsole/signIn">
         <span class="a-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.7">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -420,7 +431,7 @@
       </a>
 
       <!-- Create account -->
-      <a class="action-card" href="createAccount">
+      <a class="action-card" href="/acmeConsole/createAccount">
         <span class="a-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#12172B" stroke-width="1.7">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Acme Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12172B;
+    --ink-soft: #232A45;
+    --paper: #F7F5F0;
+    --paper-dim: #EDEAE2;
+    --gold: #C9A962;
+    --gray: #6C7280;
+    --line: #DEDAD0;
+    --success: #4C7A5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand-mark { display: flex; align-items: center; gap: 12px; }
+
+  .brand-mark .glyph {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .brand-mark .glyph svg { width: 32px; height: 32px; }
+
+  .brand-mark span {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 17px; letter-spacing: 0.02em;
+  }
+
+  .brand-mark span .thin {
+    font-weight: 400; color: var(--gold); letter-spacing: 0.04em;
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 20px; }
+
+  .who {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #9DA2B8;
+    letter-spacing: 0.02em;
+  }
+
+  .signout {
+    font-size: 13px;
+    color: var(--paper);
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .signout:hover { border-color: var(--gold); background: rgba(201,169,98,0.1); }
+
+  /* ---------- Content ---------- */
+  .wrap { max-width: 960px; margin: 0 auto; padding: 48px 40px; }
+
+  .page-head { margin-bottom: 36px; }
+
+  .page-head .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px; display: block;
+  }
+
+  .page-head h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 32px; letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+
+  .page-head p { font-size: 14.5px; color: var(--gray); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+  .card .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--gray); margin-bottom: 10px;
+  }
+
+  .card .value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 20px; letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  .card .value.muted { color: var(--gray); font-weight: 500; font-size: 16px; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--success);
+  }
+
+  .status-pill .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(76,122,94,0.2);
+  }
+
+  .notice {
+    border: 1px dashed var(--line);
+    border-left: 3px solid var(--gold);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--paper-dim);
+  }
+
+  .notice strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; display: block; margin-bottom: 6px;
+  }
+
+  .notice p { font-size: 13.5px; color: var(--gray); line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 16px 20px; }
+    .wrap { padding: 32px 20px; }
+    .who { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand-mark">
+      <div class="glyph">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#C9A962" stroke-linejoin="round">
+          <path d="M16 2.5 L28 7.2 V16.5 C28 23.4 22.9 28.4 16 30.5 C9.1 28.4 4 23.4 4 16.5 V7.2 Z"
+                stroke-width="1.4"/>
+          <path d="M16 6 L25 9.5 V16.4 C25 21.7 21 25.7 16 27.6 C11 25.7 7 21.7 7 16.4 V9.5 Z"
+                stroke-width="0.6" opacity="0.45"/>
+          <path d="M11.2 22 L16 10.8 L20.8 22" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M13.2 18.2 H18.8" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span>Acme <span class="thin">Console</span></span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="who" id="who">signed in</span>
+      <a class="signout" href="/acmeConsole/signIn">Sign out</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="page-head">
+      <span class="eyebrow">Dashboard</span>
+      <h1>Welcome back, <span id="display-name">there</span>.</h1>
+      <p>Everything your organization relies on, behind one sign-in.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">Signed in as</div>
+        <div class="value muted" id="card-email">—</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Organization</div>
+        <div class="value">Acme Inc.</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Session</div>
+        <div class="value">
+          <span class="status-pill"><span class="dot"></span> Active</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>This page is not protected yet.</strong>
+      <p>Anyone can open this URL directly without signing in, and the details above are
+         placeholders held in the browser. Both are fixed in the next phase, when Spring
+         Security adds a real session and locks this route.</p>
+    </div>
+
+  </div>
+
+  <script>
+    // Placeholder only — the browser is trusting itself here, which is exactly
+    // the problem Spring Security solves in the next phase.
+    const email = sessionStorage.getItem('acme.email');
+
+    if (email) {
+      document.getElementById('card-email').textContent = email;
+      document.getElementById('display-name').textContent = email.split('@')[0];
+      document.getElementById('who').textContent = email;
+    }
+  </script>
+
+</body>
+</html>

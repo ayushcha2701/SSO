@@ -31,4 +31,9 @@ public class PageController {
     public String createAccount() {
         return "createAcct";
     }
+
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "dashboard";
+    }
 }

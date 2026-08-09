@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in with SSO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #12172B;
+            --ink-soft: #232A45;
+            --paper: #F7F5F0;
+            --paper-dim: #EDEAE2;
+            --gold: #C9A962;
+            --gold-dim: #A9895064;
+            --gray: #6C7280;
+            --line: #DEDAD0;
+            --success: #4C7A5E;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .panel-brand {
+            flex: 1 1 42%;
+            background: var(--ink);
+            color: var(--paper);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 56px;
+            position: relative;
+            overflow: hidden;
+            min-width: 320px;
+        }
+
+        .panel-brand::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                    repeating-linear-gradient(115deg, transparent 0 78px, rgba(201,169,98,0.07) 78px 79px);
+            pointer-events: none;
+        }
+
+        .brand-mark {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .brand-mark .glyph {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-mark .glyph svg { width: 34px; height: 34px; }
+
+        .brand-mark span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-mark span .thin {
+            font-weight: 400;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+        }
+
+        .brand-copy { z-index: 1; max-width: 380px; }
+
+        .brand-copy h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 34px;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+        }
+
+        .brand-copy p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #C4C7D6;
+        }
+
+        .status-row {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: #9DA2B8;
+            letter-spacing: 0.02em;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(76,122,94,0.25);
+        }
+
+        .panel-form {
+            flex: 1 1 58%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--gray); text-decoration: none;
+            margin-bottom: 22px; transition: color 0.15s ease;
+        }
+        .back-link:hover { color: var(--ink); }
+
+        .card-header { margin-bottom: 36px; }
+
+        .card-header .eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .card-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .sso-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .sso-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 16px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+            text-align: left;
+        }
+
+        .sso-button:hover {
+            border-color: var(--ink);
+            box-shadow: 0 2px 10px rgba(18,23,43,0.06);
+        }
+
+        .sso-button:active { transform: scale(0.99); }
+
+        .sso-button:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+
+        .sso-button .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sso-button .icon svg { width: 20px; height: 20px; }
+
+        .sso-button span.provider-label { flex: 1; }
+
+        .sso-button .arrow {
+            color: var(--gray);
+            font-size: 15px;
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            transform: translateX(-4px);
+        }
+
+        .sso-button:hover .arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: var(--gray);
+            font-size: 12px;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
+
+        .work-email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .work-email-form label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-soft);
+        }
+
+        /* --- Credentials (User ID + Password) form --- */
+        .cred-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-soft);
+        }
+
+        .field input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px rgba(18,23,43,0.06);
+        }
+
+        .field input::placeholder { color: #A6ABB8; }
+
+        .cred-submit {
+            margin-top: 4px;
+            width: 100%;
+            padding: 13px 20px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .cred-submit:hover { background: var(--ink-soft); }
+
+        .cred-submit:disabled { opacity: 0.6; cursor: default; }
+
+        .form-error {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            border: 1px solid #E0B4B4;
+            border-left: 3px solid #B4483F;
+            border-radius: 8px;
+            background: #FBF0EF;
+            color: #8E322B;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .form-error.show { display: block; }
+
+        .cred-submit:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+
+        .field-hint {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -4px;
+        }
+
+        .field-hint a {
+            font-size: 12.5px;
+            color: var(--gray);
+            text-decoration: none;
+        }
+
+        .field-hint a:hover { color: var(--ink); text-decoration: underline; }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-row input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .input-row input:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px rgba(18,23,43,0.06);
+        }
+
+        .input-row input::placeholder { color: #A6ABB8; }
+
+        .continue-btn {
+            padding: 12px 20px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .continue-btn:hover { background: var(--ink-soft); }
+
+        .continue-btn:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+
+        .footnote {
+            margin-top: 28px;
+            font-size: 12.5px;
+            color: var(--gray);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .footnote a {
+            color: var(--ink-soft);
+            text-decoration: underline;
+            text-decoration-color: var(--line);
+            text-underline-offset: 2px;
+        }
+
+        @media (max-width: 860px) {
+            body { flex-direction: column; }
+            .panel-brand { flex: 0 0 auto; padding: 32px 28px; min-height: 200px; }
+            .brand-copy h1 { font-size: 26px; }
+            .panel-form { padding: 32px 20px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="panel-brand">
+    <div class="brand-mark">
+        <div class="glyph">
+            <svg viewBox="0 0 32 32" fill="none" stroke="#C9A962" stroke-linejoin="round">
+                <!-- shield -->
+                <path d="M16 2.5 L28 7.2 V16.5 C28 23.4 22.9 28.4 16 30.5 C9.1 28.4 4 23.4 4 16.5 V7.2 Z"
+                      stroke-width="1.4"/>
+                <!-- inner hairline -->
+                <path d="M16 6 L25 9.5 V16.4 C25 21.7 21 25.7 16 27.6 C11 25.7 7 21.7 7 16.4 V9.5 Z"
+                      stroke-width="0.6" opacity="0.45"/>
+                <!-- A monogram -->
+                <path d="M11.2 22 L16 10.8 L20.8 22" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M13.2 18.2 H18.8" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <span>Acme <span class="thin">Console</span></span>
+    </div>
+
+    <div class="brand-copy">
+        <h1>One identity.<br>Every workspace.</h1>
+        <p>Sign in once through your organization's identity provider to reach every tool your team relies on — no separate passwords to manage.</p>
+    </div>
+
+    <div class="status-row">
+        <span class="status-dot"></span>
+        <span>IDENTITY PROVIDER · CONNECTED</span>
+    </div>
+</div>
+
+<div class="panel-form">
+    <div class="card">
+        <a class="back-link" href="/acmeConsole/signUp">← Back</a>
+
+        <div class="card-header">
+            <span class="eyebrow">Secure sign-in</span>
+            <h2>Welcome back</h2>
+            <p>Enter your credentials to continue.</p>
+        </div>
+
+        <!-- BACKEND HOOK: wire form submit to your credential authentication endpoint -->
+        <form class="cred-form" id="credentials-form">
+            <div class="field">
+                <label for="user-id">User ID</label>
+                <input type="text" id="user-id" name="user-id" placeholder="Email ID or Username" autocomplete="username" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+            </div>
+            <div class="field-hint">
+                <a href="#">Forgot password?</a>
+            </div>
+            <button class="cred-submit" type="submit" id="cred-submit">Sign in</button>
+
+            <div class="form-error" id="login-error" role="alert"></div>
+        </form>
+
+        <div class="divider">or use single sign-on</div>
+
+        <div class="sso-list">
+            <!-- BACKEND HOOK: wire each button's onclick/handler to your SSO redirect flow -->
+            <button class="sso-button" id="sso-google" type="button">
+          <span class="icon">
+            <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.66-.22-2.45H12v4.63h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.92l-3.88-3c-1.08.72-2.46 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.11A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.27 14.27a7.2 7.2 0 0 1 0-4.54V6.62H1.27a12 12 0 0 0 0 10.76z"/><path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.62l4 3.11C6.22 6.87 8.87 4.75 12 4.75z"/></svg>
+          </span>
+                <span class="provider-label">Continue with Google Workspace</span>
+                <span class="arrow">→</span>
+            </button>
+
+            <button class="sso-button" id="sso-microsoft" type="button">
+          <span class="icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="9" height="9" fill="#F35325"/><rect x="13" y="2" width="9" height="9" fill="#81BC06"/><rect x="2" y="13" width="9" height="9" fill="#05A6F0"/><rect x="13" y="13" width="9" height="9" fill="#FFBA08"/></svg>
+          </span>
+                <span class="provider-label">Continue with Microsoft Entra ID</span>
+                <span class="arrow">→</span>
+            </button>
+
+            <button class="sso-button" id="sso-okta" type="button">
+          <span class="icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#12172B" stroke-width="2"/><circle cx="12" cy="12" r="3.4" fill="#12172B"/></svg>
+          </span>
+                <span class="provider-label">Continue with Okta</span>
+                <span class="arrow">→</span>
+            </button>
+
+            <button class="sso-button" id="sso-saml" type="button">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#12172B" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>
+          </span>
+                <span class="provider-label">Continue with SAML</span>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+
+        <div class="divider">or use your work email</div>
+
+        <!-- BACKEND HOOK: wire form submit to your email-domain SSO lookup / redirect logic -->
+        <form class="work-email-form" id="email-sso-form">
+            <label for="work-email">Work email</label>
+            <div class="input-row">
+                <input type="email" id="work-email" name="work-email" placeholder="you@company.com" required>
+                <button class="continue-btn" type="submit">Continue</button>
+            </div>
+        </form>
+
+        <p class="footnote">
+            Don't have an account? <a href="/acmeConsole/createAccount">Create one</a><br>
+            Trouble signing in? <a href="#">Contact your admin</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    const form     = document.getElementById('credentials-form');
+    const submitEl = document.getElementById('cred-submit');
+    const errorEl  = document.getElementById('login-error');
+
+    function showError(message) {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+    }
+
+    function clearError() {
+        errorEl.classList.remove('show');
+    }
+
+    form.addEventListener('submit', async (event) => {
+        // Without this the browser reloads the page and the fetch never runs.
+        event.preventDefault();
+        clearError();
+
+        // The form field is called "user-id"; the API expects "workEmailId".
+        const email    = document.getElementById('user-id').value.trim();
+        const password = document.getElementById('password').value;
+
+        submitEl.disabled = true;
+        submitEl.textContent = 'Signing in…';
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method:      'POST',
+                headers:     { 'Content-Type': 'application/json' },
+                // Send and store the JSESSIONID cookie — without this the
+                // session the server just created never reaches the browser.
+                credentials: 'include',
+                body:        JSON.stringify({ workEmailId: email, password: password })
+            });
+
+            if (res.ok) {
+                // Placeholder until a real server session exists — see the note
+                // on the dashboard page.
+                sessionStorage.setItem('acme.email', email);
+                window.location = '/acmeConsole/dashboard';
+                return;
+            }
+
+            if (res.status === 401) {
+                showError('Invalid username or password.');
+            } else if (res.status === 400) {
+                showError('Please enter a valid work email and password.');
+            } else {
+                showError('Something went wrong. Please try again.');
+            }
+        } catch (err) {
+            // Network failure — the request never reached the server.
+            showError('Could not reach the server. Check your connection.');
+        }
+
+        submitEl.disabled = false;
+        submitEl.textContent = 'Sign in';
+    });
+</script>
+
+</body>
+</html>

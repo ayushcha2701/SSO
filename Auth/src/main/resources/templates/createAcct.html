@@ -54,17 +54,19 @@
   .brand-mark { display: flex; align-items: center; gap: 12px; z-index: 1; }
 
   .brand-mark .glyph {
-    width: 34px; height: 34px;
-    border: 1.5px solid var(--gold);
-    border-radius: 8px;
+    width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
   }
 
-  .brand-mark .glyph svg { width: 16px; height: 16px; }
+  .brand-mark .glyph svg { width: 34px; height: 34px; }
 
   .brand-mark span {
     font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600; font-size: 17px; letter-spacing: 0.01em;
+    font-weight: 600; font-size: 17px; letter-spacing: 0.02em;
+  }
+
+  .brand-mark span .thin {
+    font-weight: 400; color: var(--gold); letter-spacing: 0.04em;
   }
 
   .brand-copy { z-index: 1; max-width: 380px; }
@@ -182,6 +184,21 @@
   .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .submit-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
+  .form-error {
+    display: none;
+    margin-top: 14px;
+    padding: 11px 14px;
+    border: 1px solid #E0B4B4;
+    border-left: 3px solid #B4483F;
+    border-radius: 8px;
+    background: #FBF0EF;
+    color: #8E322B;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .form-error.show { display: block; }
+
   .footnote {
     margin-top: 20px; font-size: 13px; color: var(--gray); text-align: center;
   }
@@ -209,12 +226,19 @@
   <div class="panel-brand">
     <div class="brand-mark">
       <div class="glyph">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A962" stroke-width="1.6">
-          <rect x="4" y="10" width="16" height="10" rx="2"/>
-          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        <svg viewBox="0 0 32 32" fill="none" stroke="#C9A962" stroke-linejoin="round">
+          <!-- shield -->
+          <path d="M16 2.5 L28 7.2 V16.5 C28 23.4 22.9 28.4 16 30.5 C9.1 28.4 4 23.4 4 16.5 V7.2 Z"
+                stroke-width="1.4"/>
+          <!-- inner hairline -->
+          <path d="M16 6 L25 9.5 V16.4 C25 21.7 21 25.7 16 27.6 C11 25.7 7 21.7 7 16.4 V9.5 Z"
+                stroke-width="0.6" opacity="0.45"/>
+          <!-- A monogram -->
+          <path d="M11.2 22 L16 10.8 L20.8 22" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M13.2 18.2 H18.8" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </div>
-      <span>Acme Console</span>
+      <span>Acme <span class="thin">Console</span></span>
     </div>
 
     <div class="brand-copy">
@@ -245,7 +269,7 @@
 
   <div class="panel-form">
     <div class="card">
-      <a class="back-link" href="../../../../../UI/index.html">← Back</a>
+      <a class="back-link" href="/acmeConsole/signUp">← Back</a>
 
       <div class="card-header">
         <span class="eyebrow">Create account</span>
@@ -282,10 +306,12 @@
         </div>
 
         <button class="submit-btn" type="submit" id="submit-btn" disabled>Create account</button>
+
+        <div class="form-error" id="signup-error" role="alert"></div>
       </form>
 
       <p class="footnote">
-        Already have an account? <a href="../../../../../UI/sso-login.html">Sign in</a>
+        Already have an account? <a href="/acmeConsole/signIn">Sign in</a>
       </p>
     </div>
   </div>
@@ -343,13 +369,55 @@
     function refresh() { submitBtn.disabled = !formValid(); }
     [first, last].forEach(el => el.addEventListener('input', refresh));
 
-    form.addEventListener('submit', (e) => {
+    // ---- Submit to the real API ----
+    const errorEl = document.getElementById('signup-error');
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!formValid()) return;
+
+      errorEl.classList.remove('show');
       submitBtn.textContent = 'Creating account…';
       submitBtn.disabled = true;
-      // BACKEND HOOK: replace this timeout with your real API call
-      setTimeout(() => { window.location.href = 'sso-login.html'; }, 1200);
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            firstName:   first.value.trim(),
+            lastName:    last.value.trim(),
+            workEmailId: email.value.trim(),
+            password:    pw.value
+          })
+        });
+
+        if (res.status === 201) {
+          window.location.href = '/acmeConsole/signIn';
+          return;
+        }
+
+        const body = await res.json().catch(() => ({}));
+
+        if (res.status === 409) {
+          showError(body.message || 'An account with this email already exists.');
+        } else if (res.status === 400) {
+          // The server returns one entry per invalid field.
+          showError(Object.values(body).join(' ') || 'Please check your details and try again.');
+        } else {
+          showError('Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        showError('Could not reach the server. Check your connection.');
+      }
+
+      submitBtn.textContent = 'Create account';
+      submitBtn.disabled = false;
     });
   </script>
 
