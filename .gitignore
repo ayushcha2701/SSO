@@ -7,6 +7,11 @@
 *.env
 !.env.example
 
+### IDE (root level — Auth/ has its own) ###
+.idea/
+*.iml
+.vscode/
+
 ### Logs ###
 *.log
 
